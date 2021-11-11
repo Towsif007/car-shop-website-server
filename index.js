@@ -22,6 +22,7 @@ async function run(){
         const database = client.db('carProducts')
         // const productCollection = database.collection('products');
         const exploreCollection = database.collection('explores');
+        const purchaseCollection = database.collection('purchase')
 
         
         // app.get('/products', async(req, res) =>{
@@ -47,7 +48,14 @@ async function run(){
             res.json(explore);
         });
 
-
+            
+            
+            app.post('/purchase', async (req, res) => {
+                const carPurchase = req.body;
+                const result = await purchaseCollection.insertOne(carPurchase);
+                console.log(result);
+                res.json(result)
+            });
 
 
 
