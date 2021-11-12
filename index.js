@@ -23,6 +23,7 @@ async function run(){
         // const productCollection = database.collection('products');
         const exploreCollection = database.collection('explores');
         const purchaseCollection = database.collection('purchase')
+        const usersCollection = database.collection('users')
 
         
         // app.get('/products', async(req, res) =>{
@@ -41,21 +42,66 @@ async function run(){
 
         // Get Single Car 
         app.get('/explores/:id', async(req, res) => {
-            const id = req.params.id;
+            const id = req.params.id
             // console.log("getting single id", id);
             const query = {_id: ObjectId(id)}
             const explore = await exploreCollection.findOne(query);
             res.json(explore);
         });
 
-            
-            
-            app.post('/purchase', async (req, res) => {
+
+        app.get('/purchase', async (req, res) =>{
+            const email = req.query.email;
+            const query = {email : email}
+            const cursor = purchaseCollection.find(query)
+            const orders = await cursor.toArray();
+            res.json(orders);
+        });
+
+                app.post('/purchase', async (req, res) => {
                 const carPurchase = req.body;
                 const result = await purchaseCollection.insertOne(carPurchase);
-                console.log(result);
-                res.json(result)
+                // console.log(result);
+                res.json(result);
             });
+
+
+            app.get('/users/:email', async (req, res)=>{
+                const email = req.params.email;
+                const query = { email : email };
+                const user = await usersCollection.findOne(query);
+                let isAdmin = false;
+                if(user?.role === 'admin'){
+                    isAdmin = true;
+                }
+                res.json({admin : isAdmin});
+            })
+
+
+            app.post('/users', async (req, res) =>{
+                const user = req.body;
+                const result = await usersCollection.insertOne(user);
+                console.log(result);
+                res.json(result);
+            });
+
+            app.put('/users', async(req, res)=> {
+                const user = req.body;
+                const filter = {email: user.email};
+                const options = {upsert: true};
+                const updateDoc = {$set: user};
+                const result = await usersCollection.updateOne(filter, updateDoc, options);
+                res.json(result);
+            })
+
+            app.put('/users/admin', async(req, res)=>{
+                const user = req.body;
+                console.log('put', user);
+                const filter = {email: user.email};
+                const updateDoc = {$set: {role : 'admin'}}
+                const result = await usersCollection.updateOne(filter, updateDoc)
+                res.json(result);
+            })
 
 
 
