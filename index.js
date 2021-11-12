@@ -40,7 +40,7 @@ async function run(){
             res.send(explores);
         });
 
-        // Get Single Car 
+       
         app.get('/explores/:id', async(req, res) => {
             const id = req.params.id
             // console.log("getting single id", id);
@@ -92,7 +92,7 @@ async function run(){
                 const updateDoc = {$set: user};
                 const result = await usersCollection.updateOne(filter, updateDoc, options);
                 res.json(result);
-            })
+            });
 
             app.put('/users/admin', async(req, res)=>{
                 const user = req.body;
@@ -101,10 +101,25 @@ async function run(){
                 const updateDoc = {$set: {role : 'admin'}}
                 const result = await usersCollection.updateOne(filter, updateDoc)
                 res.json(result);
-            })
+            });
 
+            //Delete API request
+            app.delete('/purchase/:id', async (req, res) =>{
+                const id = req.params.id;
+                const query = {_id: ObjectId(id)};
+                const result = await purchaseCollection.deleteOne(query);
+                console.log(result);
+                res.json(result);
+            });
 
+            app.post('/addexplores', async (req, res) => {
+                const addExplores = req.body;
+                const result = await exploreCollection.insertOne(addExplores);
+                console.log(result);
+                res.json(result)
+            });
 
+            
 
     }
     finally{
