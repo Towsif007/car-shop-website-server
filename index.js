@@ -20,17 +20,13 @@ async function run(){
     try{
         await client.connect();
         const database = client.db('carProducts')
-        // const productCollection = database.collection('products');
         const exploreCollection = database.collection('explores');
         const purchaseCollection = database.collection('purchase')
         const usersCollection = database.collection('users')
+        const reviewsCollection = database.collection('reviews')
 
         
-        // app.get('/products', async(req, res) =>{
-        //     const cursor = productCollection.find({});
-        //     const products = await cursor.toArray();
-        //     res.send(products);
-        // }) 
+        
         
         // Get Products Api
 
@@ -115,11 +111,22 @@ async function run(){
             app.post('/addexplores', async (req, res) => {
                 const addExplores = req.body;
                 const result = await exploreCollection.insertOne(addExplores);
-                console.log(result);
+                // console.log(result);
                 res.json(result)
             });
 
-            
+            app.get('/reviews', async(req, res) =>{
+            const cursor = reviewsCollection.find({});
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        }) 
+
+        app.post('/addreviews', async (req, res) => {
+            const addReviews = req.body;
+            const result = await reviewsCollection.insertOne(addReviews);
+            // console.log(result);
+            res.json(result)
+        });
 
     }
     finally{
